@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  provider    String   // "wechat" | "alipay"
+  providerId  String   // openid or alipay user_id
+  nickname    String?
+  avatar      String?
+  unionId     String?  // WeChat unionid, for account linking
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([provider, providerId])
+  @@index([provider])
+}
+model Order {
+  id              String    @id @default(cuid())
+  userId          String
+  amount          Int       // in cents (0.01 CNY = 1)
+  currency        String    @default("CNY")
+  provider        String    // "wechat" | "alipay"
+  status          String    @default("pending") // pending | paid | failed | closed
+  providerOrderId String?   // wechat transaction_id or alipay trade_no
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  expiresAt       DateTime?
+
+  @@index([userId])
+  @@index([status])
+}
+model MockLoginTicket {
+  id          String    @id @default(cuid())
+  provider    String    // "wechat" | "alipay"
+  code        String    // which mock user was chosen on the phone
+  status      String    @default("pending") // pending | confirmed | consumed
+  createdAt   DateTime  @default(now())
+  confirmedAt DateTime?
+
+  @@index([status])
+}
