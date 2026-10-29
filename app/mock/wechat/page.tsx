@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
 function MockWeChatContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const state = searchParams.get("state") ?? "";
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [scanUrl, setScanUrl] = useState<string>("");
   const [status, setStatus] = useState<"loading" | "pending" | "confirmed" | "error">("loading");
+  const [callbackUrl, setCallbackUrl] = useState<string | null>(null);
   const consumed = useRef(false);
 
   // 1. Create a ticket, then render a real QR pointing at the phone-confirm page
@@ -43,12 +43,19 @@ function MockWeChatContent() {
       if (data.status === "confirmed" && data.code && !consumed.current) {
         consumed.current = true;
         setStatus("confirmed");
-        // Finish login through the SAME callback route as the real flow
-        router.push(`/api/auth/wechat/callback?code=${encodeURIComponent(data.code)}&state=${encodeURIComponent(state)}`);
+        // Finish login through the SAME callback route as the real flow.
+        // A hard navigation is used because client-side routing can fail
+        // silently here (e.g. when the page was restored from bfcache).
+        const url =
+          `/api/auth/wechat/callback` +
+          `?code=${encodeURIComponent(data.code)}` +
+          `&state=${encodeURIComponent(state)}`;
+        setCallbackUrl(url);
+        window.location.assign(url);
       }
     }, 1500);
     return () => clearInterval(iv);
-  }, [ticketId, status, state, router]);
+  }, [ticketId, status, state]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 w-full max-w-sm">
@@ -68,6 +75,15 @@ function MockWeChatContent() {
         {status === "confirmed" && <span className="text-green-600">已确认，正在登录...</span>}
         {status === "error" && <span className="text-red-500">生成失败</span>}
       </p>
+
+      {status === "confirmed" && callbackUrl && (
+        <a
+          href={callbackUrl}
+          className="block text-center text-xs text-green-600 underline mb-3"
+        >
+          如果没自动跳转，点这里继续
+        </a>
+      )}
 
       {scanUrl && (
         <p className="text-[10px] text-gray-400 break-all text-center mb-4 leading-tight">{scanUrl}</p>
