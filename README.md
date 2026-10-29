@@ -9,6 +9,7 @@ box and switch to real credentials through environment variables.
 ```bash
 npm install
 cp .env.example .env.local        # all defaults set to mock
+npm run db:setup                   # create SQLite DB + apply migrations
 npm run dev                        # http://localhost:3000
 ```
 
@@ -231,6 +232,7 @@ npm run smoke       # 26 end-to-end HTTP checks (requires running server)
 | `npm run smoke` | End-to-end smoke test |
 | `npm run db:migrate` | `prisma migrate dev` (requires Node < 24) |
 | `npm run db:generate` | `prisma generate` |
+| `npm run db:setup` | Create the SQLite DB and apply migrations (works on any Node) |
 
 ## License
 
