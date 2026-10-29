@@ -76,12 +76,19 @@ function MockWeChatContent() {
       <div className="border-t border-gray-100 pt-4">
         <p className="text-xs text-gray-400 mb-2 text-center">没有第二台设备？直接模拟手机端扫码</p>
         {ticketId && (
-          <Link
-            href={`/mock/wechat/scan?t=${ticketId}`}
-            className="block text-center rounded-lg bg-green-500 text-white px-4 py-2.5 text-sm font-medium hover:bg-green-600 transition-colors"
-          >
-            打开手机端确认页
-          </Link>
+          <>
+            <Link
+              href={`/mock/wechat/scan?t=${ticketId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center rounded-lg bg-green-500 text-white px-4 py-2.5 text-sm font-medium hover:bg-green-600 transition-colors"
+            >
+              打开手机端确认页
+            </Link>
+            <p className="text-[10px] text-gray-400 mt-2 text-center">
+              会在新标签打开，本页保持轮询
+            </p>
+          </>
         )}
       </div>
 
