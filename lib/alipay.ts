@@ -127,7 +127,8 @@ interface AlipayUserInfoResponse {
 export function alipayAuthUrl(state: string): string {
   const env = getEnv();
   if (env.ALIPAY_LOGIN_MODE === "mock") {
-    return `${env.APP_URL}/mock/alipay?state=${encodeURIComponent(state)}`;
+    // Relative so the browser stays on the origin it is already using.
+    return `/mock/alipay?state=${encodeURIComponent(state)}`;
   }
   const params = new URLSearchParams({
     app_id: env.ALIPAY_APP_ID!,

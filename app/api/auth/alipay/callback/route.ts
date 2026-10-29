@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const state = url.searchParams.get("state");
 
   // 1. Validate CSRF state
-  if (!(await validateOAuthState(state))) {
+  if (!(await validateOAuthState("alipay", state))) {
     log("warn", "Alipay callback: invalid state", { state });
     return NextResponse.redirect(new URL("/?error=csrf", req.url));
   }

@@ -111,7 +111,7 @@ async function main() {
   const start = await req("/api/auth/wechat/start", {}, desktop);
   const state = new URL(start.headers.get("location")).searchParams.get("state");
   ok("start redirects with state", !!state);
-  ok("oauth_state cookie set", !!desktop.get("oauth_state"));
+  ok("oauth_state cookie set", !!desktop.get("oauth_state_wechat"));
 
   const { ticketId } = await postJson("/api/mock/wechat/qr", {});
   ok("QR ticket created", !!ticketId);
@@ -135,7 +135,7 @@ async function main() {
   );
   ok("callback redirects to /dashboard", cb.headers.get("location") === BASE + "/dashboard");
   ok("session cookie issued", !!desktop.get("session"));
-  ok("oauth_state cookie cleared", !desktop.get("oauth_state"));
+  ok("oauth_state cookie cleared", !desktop.get("oauth_state_wechat"));
 
   const dash = await (await req("/dashboard", {}, desktop)).text();
   ok("dashboard renders the WeChat user", dash.includes("WeChatUser_bob"));

@@ -5,8 +5,8 @@ import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
-    const state = await setOAuthState();
-    return NextResponse.redirect(alipayAuthUrl(state));
+    const state = await setOAuthState("alipay");
+    return NextResponse.redirect(new URL(alipayAuthUrl(state), req.url));
   } catch (e) {
     log("error", "Alipay auth start failed", {
       error: (e as Error).message,

@@ -5,8 +5,8 @@ import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
-    const state = await setOAuthState();
-    return NextResponse.redirect(wechatAuthUrl(state));
+    const state = await setOAuthState("wechat");
+    return NextResponse.redirect(new URL(wechatAuthUrl(state), req.url));
   } catch (e) {
     // Misconfiguration is the most likely cause here; log the real reason so
     // the operator can fix it instead of guessing from a bare 500.

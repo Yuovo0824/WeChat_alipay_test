@@ -29,7 +29,9 @@ interface WeChatToken {
 export function wechatAuthUrl(state: string): string {
   const env = getEnv();
   if (env.WECHAT_LOGIN_MODE === "mock") {
-    return `${env.APP_URL}/mock/wechat?state=${encodeURIComponent(state)}`;
+    // Relative so the browser stays on whatever origin it is already using
+    // (localhost during local development, a tunnel URL when exposed).
+    return `/mock/wechat?state=${encodeURIComponent(state)}`;
   }
   const params = new URLSearchParams({
     appid: env.WECHAT_APP_ID!,

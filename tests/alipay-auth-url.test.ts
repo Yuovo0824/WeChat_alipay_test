@@ -49,8 +49,7 @@ describe("Alipay authorisation URL", () => {
 
   it("points at the local mock page in mock mode", () => {
     setup({ ALIPAY_LOGIN_MODE: "mock" });
-    expect(alipayAuthUrl("abc")).toBe(
-      "https://example.com/mock/alipay?state=abc"
-    );
+    // Relative so it follows the origin the browser is already on.
+    expect(alipayAuthUrl("abc")).toBe("/mock/alipay?state=abc");
   });
 });

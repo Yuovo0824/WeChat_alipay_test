@@ -81,10 +81,18 @@ export async function clearSession() {
   store.set(SESSION_COOKIE, "", { ...cookieBase, maxAge: 0 });
 }
 
-export async function setOAuthState(): Promise<string> {
+/**
+ * State cookies are scoped per provider so that starting a WeChat login and
+ * an Alipay login from the same browser does not invalidate the first flow.
+ */
+function stateCookieName(provider: string): string {
+  return `${OAUTH_STATE_COOKIE}_${provider}`;
+}
+
+export async function setOAuthState(provider: string): Promise<string> {
   const state = randomBytes(32).toString("hex");
   const store = await cookies();
-  store.set(OAUTH_STATE_COOKIE, state, {
+  store.set(stateCookieName(provider), state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -94,13 +102,17 @@ export async function setOAuthState(): Promise<string> {
   return state;
 }
 
-export async function validateOAuthState(state: string | null): Promise<boolean> {
+export async function validateOAuthState(
+  provider: string,
+  state: string | null
+): Promise<boolean> {
   if (!state) return false;
   const store = await cookies();
-  const expected = store.get(OAUTH_STATE_COOKIE)?.value;
+  const name = stateCookieName(provider);
+  const expected = store.get(name)?.value;
   if (!expected) return false;
   // Clear the state cookie after use
-  store.set(OAUTH_STATE_COOKIE, "", { ...cookieBase, maxAge: 0 });
+  store.set(name, "", { ...cookieBase, maxAge: 0 });
   try {
     return timingSafeEqual(Buffer.from(expected), Buffer.from(state));
   } catch {
