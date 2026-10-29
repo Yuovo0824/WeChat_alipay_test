@@ -1,0 +1,28 @@
+# deps
+node_modules/
+
+# next
+.next/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+
+# certs
+certs/
+
+# mock keys (dev-only keypairs)
+.mock/keys/
+
+# db
+prisma/*.db
+
+# ide
+.vscode/
+.idea/
+
+# os
+Thumbs.db
+Desktop.ini
